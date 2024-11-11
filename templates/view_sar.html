@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAR Results</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Each Image Result Card */
+        .image-card {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        /* Highlighting based on thresholds */
+        .flagged {
+            background-color: #ffe6e6; /* faint red for flagged rows */
+        }
+        .normal {
+            background-color: #e6ffe6; /* faint green for normal rows */
+        }
+
+        /* Image and Details Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Text details styling */
+        .image-details h3 {
+            color: #555;
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .image-details p {
+            margin: 5px 0;
+            color: #777;
+            font-size: 0.95em;
+        }
+
+        /* Divider styling */
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #eee;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Statistical Analysis Report (SAR) Results</h1>
+        
+        {% set mean_threshold = 150 %}
+        {% set std_dev_threshold = 60 %}
+        
+        {% for data in sar_display_data %}
+            <div class="image-card {% if data.mean_red > mean_threshold or data.mean_green > mean_threshold or data.mean_blue > mean_threshold or data.std_red > std_dev_threshold or data.std_green > std_dev_threshold or data.std_blue > std_dev_threshold %}flagged{% else %}normal{% endif %}">
+                
+                <div class="image-details">
+                    <h3>Original Image: {{ data.original }}</h3>
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <!-- Display Original Image -->
+                        <img src="{{ url_for('static', filename='uploads/' + data.original) }}" alt="Original Image" style="width: 150px; height: auto; border-radius: 5px;">
+                        
+                        <!-- Display Mean, Std Dev, and Median Values -->
+                        <div>
+                            <p><strong>Mean Color Values:</strong> Red = {{ data.mean_red }}, Green = {{ data.mean_green }}, Blue = {{ data.mean_blue }}</p>
+                            <p><strong>Standard Deviations:</strong> Red = {{ data.std_red }}, Green = {{ data.std_green }}, Blue = {{ data.std_blue }}</p>
+                            <p><strong>Median Color Values:</strong> Red = {{ data.median_red }}, Green = {{ data.median_green }}, Blue = {{ data.median_blue }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3x3 Image Grid for Analysis Visuals -->
+                <div class="image-grid">
+                    <img src="{{ data.histograms.r_hist }}" alt="Red Channel Histogram">
+                    <img src="{{ data.histograms.g_hist }}" alt="Green Channel Histogram">
+                    <img src="{{ data.histograms.b_hist }}" alt="Blue Channel Histogram">
+                    <img src="{{ data.histograms.mean_bar }}" alt="Mean Color Values">
+                    <img src="{{ data.histograms.std_dev_bar }}" alt="Standard Deviation Values">
+                    <img src="{{ data.histograms.median_bar }}" alt="Median Color Values">
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+    </div>
+</body>
+</html>

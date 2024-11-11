@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELA Results</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Each Image Result Card */
+        .image-card {
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        /* Conditional Background Colors */
+        .high-error {
+            background-color: #ffcccc; /* Faint red */
+        }
+
+        .low-error {
+            background-color: #ccffcc; /* Faint green */
+        }
+        
+        /* Image container styling */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Text details styling */
+        .image-details h3 {
+            color: #555;
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .image-details p {
+            margin: 5px 0;
+            color: #777;
+            font-size: 0.95em;
+        }
+        
+        /* Divider styling */
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #eee;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Error Level Analysis Results</h1>
+        {% for data in ela_display_data %}
+            <!-- Adjusted threshold to 5 for high-error -->
+            <div class="image-card {% if data.mean > 5 %}high-error{% else %}low-error{% endif %}">
+                <div class="image-details">
+                    <h3>{{ data.original }}</h3>
+                    <p>Mean Error Level: {{ data.mean }}</p>
+                    <p>Standard Deviation: {{ data.std_dev }}</p>
+                    <p>Maximum Error Level: {{ data.max }}</p>
+                </div>
+                <div class="image-grid">
+                    <!-- Render original image using "/uploads/" path directly -->
+                    <img src="{{ url_for('static', filename='uploads/' + data.original) }}" alt="Original Image">
+                    <!-- Render ELA, Histogram, and Heatmap images with "static/uploads/" path -->
+                    <img src="{{ data.ela_image }}" alt="ELA Image">
+                    <img src="{{ data.histogram }}" alt="Histogram">
+                    <img src="{{ data.heatmap }}" alt="Heatmap">
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

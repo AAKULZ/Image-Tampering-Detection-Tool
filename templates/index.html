@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Tampering Investigation - Upload Images for Metadata Extraction</title>
+    <style>
+        /* Existing styles unchanged */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .upload-container {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+        }
+
+        .file-input input[type="file"] {
+            display: none;
+        }
+
+        .file-input label {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .file-input label:hover {
+            background-color: #0056b3;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .preview-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 2px solid #007bff;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .upload-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        .upload-container button:hover {
+            background-color: #218838;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* New style for content container */
+        .content-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hidden */
+        }
+
+        /* Style for each of the five buttons */
+        .method-button {
+            background-color: #ff6347; /* Tomato Red */
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            width: 100%;
+        }
+
+        .method-button:hover {
+            background-color: #e53e3e;
+        }
+
+        /* Add responsive design for buttons */
+        @media (min-width: 768px) {
+            .method-button {
+                width: auto;
+                display: inline-block;
+            }
+        }
+
+        /* Style for the explanatory note container */
+        .note-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 5px solid #007bff;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Style for explanations under buttons */
+        .method-description {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+            text-align: left;
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Image Tampering Investigation</h1>
+
+    <div class="upload-container">
+        <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="file-input">
+                <label for="file-upload">Choose Images</label>
+                <input type="file" name="images" id="file-upload" multiple accept="image/*" onchange="showPreview()">
+            </div>
+
+            <div class="preview-container" id="preview-container"></div>
+
+            <button type="submit">Upload</button>
+        </form>
+
+        <div class="note-container">
+            <p><strong>Note:</strong> Upload images to extract metadata and perform various analysis methods to detect image tampering, including error level analysis, statistical analysis, and deepfake detection.</p>
+        </div>
+
+        <!-- Button Section with Explanations -->
+        <button class="method-button" onclick="loadContent('/view_metadata')">View Metadata</button>
+        <div class="method-description">
+            <p><strong>View Metadata:</strong> Extracts embedded metadata from the image, such as EXIF data, timestamps, and geolocation. This method helps determine if the image has been modified or manipulated by analyzing inconsistencies in the metadata.</p>
+        </div>
+
+        <button class="method-button" onclick="loadContent('/view_ela')">View Error Level Analysis Report</button>
+        <div class="method-description">
+            <p><strong>Error Level Analysis (ELA):</strong> This technique highlights inconsistencies in compression levels across an image. Differences in compression levels can indicate areas that have been altered, providing visual clues for tampering detection.</p>
+        </div>
+
+        <button class="method-button" onclick="loadContent('/view_sar')">View Statistical Analysis Report</button>
+        <div class="method-description">
+            <p><strong>Statistical Analysis:</strong> Analyzes the image's pixel data using various statistical methods to detect irregular patterns or anomalies. This approach identifies possible signs of manipulation, such as image splicing or pixel-level alterations.</p>
+        </div>
+
+        <button class="method-button" onclick="loadContent('/view_dct')">DCT Based Detection</button>
+        <div class="method-description">
+            <p><strong>Discrete Cosine Transform (DCT):</strong> A mathematical technique used to represent images in the frequency domain. DCT analysis helps to detect tampering by identifying alterations that may not be visible in the spatial domain, such as subtle pixel manipulations.</p>
+        </div>
+
+        <button class="method-button" onclick="loadContent('/view_deepfake')">Deep Fake Detection</button>
+        <div class="method-description">
+            <p><strong>Deep Fake Detection:</strong> This method uses advanced machine learning algorithms to analyze facial features, expressions, and inconsistencies in the image. It helps identify images or videos that have been manipulated using deep learning techniques, such as face swapping or synthetic generation.</p>
+        </div>
+    </div>
+
+    <div id="content-container" class="content-container"></div>
+
+    <div class="footer">
+        <p>Law Enforcement Image Metadata Extraction Tool</p>
+    </div>
+
+    <script>
+        function showPreview() {
+            const previewContainer = document.getElementById('preview-container');
+            const fileInput = document.getElementById('file-upload');
+            previewContainer.innerHTML = '';
+
+            Array.from(fileInput.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Show success alert on image upload
+        const uploadForm = document.getElementById('upload-form');
+        uploadForm.addEventListener('submit', function(event) {
+        
+            alert("Images successfully uploaded!");
+            // You can add logic for actual form submission here
+        });
+
+        function loadContent(url) {
+            const contentContainer = document.getElementById('content-container');
+            contentContainer.style.display = 'block'; // Show the content container
+
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    contentContainer.innerHTML = data;
+                })
+                .catch(error => {
+                    contentContainer.innerHTML = "<p>Error loading content. Please try again later.</p>";
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
+</body>
+</html>

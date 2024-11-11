@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metadata Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        .image-table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-table th, .image-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .edited-table th {
+            background-color: #f8d7da; /* Faint red background for edited */
+            color: #721c24; /* Dark red text for better contrast */
+        }
+
+        .non-edited-table th {
+            background-color: #d4edda; /* Faint green background for non-edited */
+            color: #155724; /* Dark green text for better contrast */
+        }
+
+        .image-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .image-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .image-table td {
+            word-wrap: break-word;
+            max-width: 300px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Metadata Results</h1>
+
+    <h2>Edited Images</h2>
+    <ul>
+        {% for image in edited_images %}
+            <li>{{ image }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Non-Edited Images</h2>
+    <ul>
+        {% for image in non_edited_images %}
+            <li>{{ image }}</li>
+        {% endfor %}
+    </ul>
+
+    {% for image_file, metadata_df in metadata_tables.items() %}
+        {% if image_file in edited_images %}
+            <h2>Metadata for: {{ image_file }} (Edited)</h2>
+            <table class="image-table edited-table">  <!-- Added edited-table class -->
+        {% else %}
+            <h2>Metadata for: {{ image_file }} (Non-Edited)</h2>
+            <table class="image-table non-edited-table">  <!-- Added non-edited-table class -->
+        {% endif %}
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in metadata_df.iterrows() %}
+                    <tr>
+                        <td class="key">{{ row['Property'] }}</td>
+                        <td class="value">{{ row['Value'] | safe }}</td> <!-- Render HTML in value column -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+    <div class="footer">
+        <a href="/" class="back-button">Upload more images</a>
+        <a href="/download_report" class="back-button">Download Report</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DCT Analysis Results</title>
+    <style>
+        /* Embedded CSS Styles */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            color: #2a2a2a;
+            border-bottom: 2px solid #5a5a5a;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .interpretation-note {
+            background-color: #f0f8ff;
+            border: 1px solid #d3d3d3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .interpretation-note p {
+            font-weight: bold;
+            color: #1c3b59;
+            margin: 0 0 10px 0;
+        }
+
+        .interpretation-note ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .interpretation-note li {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .yellow {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .red {
+            color: #FF6347;
+            font-weight: bold;
+        }
+
+        .dark {
+            color: #5a5a5a;
+            font-weight: bold;
+        }
+
+        h2, h3 {
+            color: #2a2a2a;
+            font-weight: 600;
+        }
+
+        .result-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .result-container h2 {
+            font-size: 1.5em;
+            color: #1c3b59;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .result-container h3 {
+            font-size: 1.2em;
+            margin-top: 15px;
+            color: #1c3b59;
+        }
+
+        img {
+            display: block;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .heatmaps {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .heatmaps img {
+            border: 2px solid #ddd;
+            padding: 5px;
+            background-color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .heatmaps img:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>DCT Analysis Results</h1>
+    
+    <div class="interpretation-note">
+        <p><strong>How to Interpret the Results:</strong></p>
+        <ul>
+            <li><span class="yellow">High DCT Coefficients (Yellow):</span> High values, especially in low frequencies, may indicate tampering, showing abrupt changes or patterns.</li>
+            <li><span class="red">Mid-range DCT Coefficients (Red):</span> Moderate values, often seen in natural textures, generally imply less likelihood of tampering.</li>
+            <li><span class="dark">Low DCT Coefficients (Darker):</span> Consistently low values, often in smooth or uniform areas, usually suggest no tampering.</li>
+        </ul>
+    </div>
+    
+    {% for result in dct_results %}
+        <div class="result-container">
+            <h2>Original Image: {{ result.original }}</h2>
+            <h3>Suspicious Regions Detected</h3>
+            <img src="{{ result.suspicious_image }}" alt="Suspicious Regions" width="400px">
+            
+            <h3>DCT Heatmaps of Selected Blocks</h3>
+            <div class="heatmaps">
+                {% for heatmap in result.dct_heatmaps %}
+                    <img src="{{ heatmap }}" alt="DCT Heatmap" width="150px">
+                {% endfor %}
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+</body>
+</html>
